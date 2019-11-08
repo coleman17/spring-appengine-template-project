@@ -1,0 +1,105 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    
+    dependencies {
+        classpath "com.google.cloud.tools:appengine-gradle-plugin:$appEnginePluginVersion"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+        classpath "io.freefair.gradle:lombok-plugin:4.1.3"
+    }
+}
+
+plugins {
+    id 'groovy'
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id "io.freefair.lombok" version "4.1.3"
+}
+
+apply plugin: 'groovy'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'com.google.cloud.tools.appengine'
+apply plugin: "io.freefair.lombok"
+
+ext {
+    debugPort = 8000
+    httpPort = 8080
+}
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+repositories {
+    mavenCentral()
+}
+
+wrapper {
+    //intellij seems to prefer the all distribution
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:$springBootVersion"
+        mavenBom 'com.google.cloud:google-cloud-bom:0.83.0-alpha'
+    }
+}
+
+dependencies {
+
+    compile(
+            'org.springframework.boot:spring-boot-starter-actuator',
+            "com.google.appengine:appengine-api-1.0-sdk:${appengineVersion}",
+            'com.google.cloud:google-cloud-pubsub',
+            'com.google.cloud:google-cloud-logging-logback:0.106.0-alpha',
+            "org.slf4j:log4j-over-slf4j:${slf4jVersion}", // routes all log4j logging to slf4j
+            "org.slf4j:jcl-over-slf4j:${slf4jVersion}",    // routes all commons logging to slf4j
+    )
+
+    configurations {
+        all*.exclude group: 'ca.juliusdavies', module: 'not-yet-commons-ssl'
+        all*.exclude group: "org.apache.velocity", module: "velocity"
+    }
+
+    compile("org.springframework.boot:spring-boot-starter-web") {
+        exclude module: "spring-boot-starter-tomcat"
+    }
+
+    compile("org.springframework.boot:spring-boot-starter-jetty")
+    
+    runtime(
+            'org.apache.httpcomponents:httpclient:4.5.7',
+            //this api client stuff doesn't get transitively pulled in, but we need it for auth
+            "com.google.api-client:google-api-client:${googleApiClientVersion}",
+            "com.google.api-client:google-api-client-appengine:${googleApiClientVersion}",
+            "com.google.api-client:google-api-client-servlet:${googleApiClientVersion}",
+    )
+    
+    compile "org.springframework.boot:spring-boot-starter-jetty:$springBootVersion"
+
+    dependencies {
+        testCompile(
+                "org.codehaus.groovy:groovy-all:${groovyVersion}",
+                "org.spockframework:spock-core:${spockSpringVersion}",
+                'com.athaydes:spock-reports:1.6.2',
+                "org.spockframework:spock-spring:${spockSpringVersion}",
+                "org.springframework.boot:spring-boot-starter-test",
+                "com.google.appengine:appengine-testing:${appengineVersion}",
+                "junit:junit",
+        )
+    }
+
+}
+
+def googleProjectId = findProperty("googleProjectId")
+
+appengine {
+    deploy {   // deploy configuration, more in the gradle profiles
+        stopPreviousVersion = true  // default - do not stop the current version
+        promote = true
+        version = 'trial'
+        projectId = googleProjectId
+    }
+}
