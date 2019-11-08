@@ -1,0 +1,15 @@
+management:
+  info:
+    git:
+      enabled: true
+  health:
+    diskspace:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+logging:
+  level:
+    org.springframework: INFO
+    com.idexx: INFO
