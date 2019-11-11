@@ -1,3 +1,5 @@
 runtime: java11
 service: integration
 instance_class: F1
+env_variables:
+  SPRING_PROFILES_ACTIVE: cloud
