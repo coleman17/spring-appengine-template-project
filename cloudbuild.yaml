@@ -1,4 +1,4 @@
 steps:
   - name: 'gradle:6.0.0-jdk11'
     entrypoint: './gradlew'
-    args: ['build', 'appengineDeploy -PgoogleProjectId=lims-acoleman-sb']
+    args: ['build appengineDeploy -PgoogleProjectId=lims-acoleman-sb']
