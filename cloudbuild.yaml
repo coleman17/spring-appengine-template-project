@@ -1,3 +1,4 @@
 steps:
-  - name: 'ubuntu'
-    args: ['bash', 'ls', './gradlew clean build appengineDeploy -PgoogleProjectId=lims-acoleman-sb']
+  - name: 'gradle:6.0.0-jdk11'
+    entrypoint: './gradlew'
+    args: ['build', 'appengineDeploy -PgoogleProjectId=lims-acoleman-sb']
