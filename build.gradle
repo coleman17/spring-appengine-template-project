@@ -23,6 +23,7 @@ apply plugin: 'groovy'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.springframework.boot'
 apply plugin: "com.google.cloud.tools.appengine-appyaml"
+apply plugin: 'jacoco'
 
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
@@ -115,6 +116,34 @@ appengine {
 project.afterEvaluate {
     bootRun {
         jvmArgs = ['-Dspring.profiles.active=local',
-                    "-DGOOGLE_CLOUD_PROJECT=${googleProjectId}".toString()]
+                   "-DGOOGLE_CLOUD_PROJECT=${googleProjectId}".toString()]
     }
+}
+
+task codeCoverageReport(type: JacocoReport) {
+    sourceSets sourceSets.main
+    executionData test
+    reports {
+        html.destination file("${reportsDir}/jacoco")
+    }
+
+    // This should match whatever is in sonar exclusions to ignore java files.
+    afterEvaluate {
+        getClassDirectories().from(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/TestApp**'
+            ])
+        })
+    }
+
+    reports {
+        xml.enabled true
+        xml.destination new File("${buildDir}/reports/jacoco/report.xml")
+        html.enabled true
+        csv.enabled false
+    }
+}
+
+codeCoverageReport.dependsOn {
+    test
 }
