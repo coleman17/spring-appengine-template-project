@@ -149,5 +149,5 @@ codeCoverageReport.dependsOn {
 }
 
 task publishCodeCovReport(dependsOn: codeCoverageReport, type: Exec) {
-    commandLine "curl", "-s", "https://codecov.io/bash)"
+    commandLine 'curl', '-s', 'https://codecov.io/bash', '| bash'
 }
