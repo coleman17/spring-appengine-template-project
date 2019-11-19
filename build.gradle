@@ -147,3 +147,7 @@ task codeCoverageReport(type: JacocoReport) {
 codeCoverageReport.dependsOn {
     test
 }
+
+task publishCodeCovReport(dependsOn: codeCoverageReport, type: Exec) {
+    commandLine "bash", "<(curl -s https://codecov.io/bash)"
+}

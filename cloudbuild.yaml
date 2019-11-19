@@ -1,10 +1,6 @@
 steps:
   - name: 'gradle:6.0.0-jdk11'
     entrypoint: 'gradle'
-    args: ['build', 'codeCoverageReport', 'appengineDeploy', '-PgoogleProjectId=lims-acoleman-sb']
-    env:
-      - 'CODECOV_TOKEN="59ff356b-47cb-4fbe-a60a-5dc4bcb1a223"'
-  - name: 'ubuntu'
-    args: ['bash', '<(curl -s https://codecov.io/bash)']
+    args: ['build', 'codeCoverageReport', 'publishCodeCovReport', 'appengineDeploy', '-PgoogleProjectId=lims-acoleman-sb']
     env:
       - 'CODECOV_TOKEN="59ff356b-47cb-4fbe-a60a-5dc4bcb1a223"'
