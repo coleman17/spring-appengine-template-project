@@ -4,8 +4,7 @@ steps:
     args: ['build', 'codeCoverageReport', 'appengineDeploy', '-PgoogleProjectId=lims-acoleman-sb']
     env:
       - 'CODECOV_TOKEN="59ff356b-47cb-4fbe-a60a-5dc4bcb1a223"'
-  - name: 'ubuntu'
-    entrypoint: 'bash'
-    args: ['curl', '-s', 'https://codecov.io/bash']
+  - name: gcr.io/cloud-builders/curl
+    args: ['https://codecov.io/bash']
     env:
       - 'CODECOV_TOKEN="59ff356b-47cb-4fbe-a60a-5dc4bcb1a223"'
