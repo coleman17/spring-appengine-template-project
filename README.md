@@ -13,3 +13,6 @@ To Deploy:
 To Run Locally:
 - Start the local Datastore emulator with `gcloud beta emulators datastore start`
 - Start the application with `./gradle bootRun`
+
+
+
